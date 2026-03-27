@@ -89,6 +89,7 @@ Place your raw material in the host project (the project you run the plugin from
 | `output/application-analysis.md` | `application-developer` | Comprehensive application analysis (workflows, behaviours, domain model, business rules, reports) extracted from source code |
 | `output/database-analysis.md` | `database-analyst` | Comprehensive database analysis (schema, stored procedures, triggers, constraints, database-level business rules) extracted from SQL and source code |
 | `output/PRD.md` | `product-manager` | Comprehensive Product Requirements Document synthesised from all analysis outputs |
+| `output/features/FT-XXX-*.md` | `prd-to-features` | Individual feature specifications decomposed from the PRD, each with user stories, wireframes, and acceptance criteria |
 
 ### Output management
 
@@ -96,6 +97,7 @@ Generated outputs are regeneratable artefacts. Recommended version control appro
 
 **Commit to version control:**
 - `output/PRD.md` — the final deliverable
+- `output/features/FT-*.md` — individual feature specifications decomposed from the PRD
 - `output/domain-analysis.md`, `output/interaction-analysis.md`, `output/application-analysis.md`, `output/database-analysis.md` — the four analysis files
 
 **Add to `.gitignore` (intermediate/regeneratable):**
@@ -116,6 +118,7 @@ graph LR
         i2h{{image-to-html}}
         ct{{curate-transcript}}
         vm{{validate-mermaid}}
+        p2f{{prd-to-features}}
     end
 
     subgraph Agents
@@ -138,6 +141,9 @@ graph LR
     ba -->|invokes| vm
     ia -->|invokes| vm
     pm -->|invokes| vm
+
+    p2f -->|reads| prd[output/PRD.md]
+    p2f -->|writes| ft[output/features/FT-*.md]
 ```
 
 ## Skills
@@ -147,6 +153,7 @@ graph LR
 | `image-to-html` | Converts a legacy UI screenshot into semantic, unstyled mockup HTML |
 | `curate-transcript` | Removes off-topic content from interview transcripts |
 | `validate-mermaid` | Validates all Mermaid diagram blocks in a markdown file and fixes broken diagrams in place |
+| `prd-to-features` | Decomposes a PRD into individually deliverable feature specifications with user stories, wireframes, acceptance criteria, and effort estimates |
 
 ## Agents
 
@@ -161,7 +168,7 @@ graph LR
 
 ## Pipeline
 
-The pipeline has two independent phases. Content curation is a manual prerequisite — run it first using the `digital-content-curator` agent or the bash script (see Troubleshooting). Once curated content exists, the `product-manager` orchestrates the analysis and synthesis stages. In the diagram below, rectangles are agents, hexagons are skills, stadium shapes are files, and the dashed border marks the manual phase.
+The pipeline has three phases. Content curation is a manual prerequisite — run it first using the `digital-content-curator` agent or the bash script (see Troubleshooting). Once curated content exists, the `product-manager` orchestrates the analysis and synthesis stages to produce the PRD. After reviewing the PRD, run `/prd-to-features` to decompose it into individually deliverable feature specifications. In the diagram below, rectangles are agents, hexagons are skills, stadium shapes are files, and the dashed border marks manual phases.
 
 ```mermaid
 flowchart TB
@@ -199,6 +206,9 @@ flowchart TB
         PM --> PRD(["output/PRD.md"])
     end
 
+    PRD -->|"/prd-to-features"| p2f_skill{{prd-to-features}}
+    p2f_skill --> features(["output/features/FT-*.md"])
+
     src --> appdev & dbanalyst
     html & curated --> ba & ia
 ```
@@ -209,6 +219,7 @@ flowchart TB
 | 1 — Code analysis | `application-developer` and `database-analyst` read `src/` independently | Stage 2 |
 | 2 — Content analysis | `business-analyst` and `interaction-analyst` consume curated outputs | Stage 1 |
 | 3 — Synthesis | `product-manager` reads all four analyses and writes `output/PRD.md` | None; depends on Stages 1 and 2 |
+| 4 — Feature decomposition (manual) | `/prd-to-features` reads `output/PRD.md` and writes individual feature specs to `output/features/` | Run after reviewing the PRD |
 
 ## Troubleshooting
 
