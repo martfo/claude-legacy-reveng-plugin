@@ -55,24 +55,52 @@ Also identify and hold in context the **shared PRD content** that applies across
 
 ### Step 4: Plan the feature breakdown
 
-Before writing any feature files, use `ultrathink` to reason carefully about the feature breakdown and dependencies. Specifically, reason through:
+Before writing any feature files, use `ultrathink` to reason carefully about the feature breakdown, dependencies, and **implementation order**. Applications are built bottom-up, in layers — you must plan the features so they can be implemented in that order.
 
-- Whether each proposed feature is truly self-contained or implicitly relies on data, configuration, or behaviour from another feature
-- Which features must be delivered before or alongside others for the system to function correctly (upstream dependencies)
-- Which features will be broken or degraded if a given feature is not present (downstream dependencies)
-- Whether any shared infrastructure (authentication, navigation, reference data, shared entities) underpins multiple features and should be treated as a dependency of all of them
-- Whether dependency chains reveal a delivery order that the user should be aware of
+#### Dependency semantics
 
-Then produce a feature plan as a neat table with the following columns:
+**Upstream dependency** means: Feature A is upstream of Feature B if A must be implemented before B can be meaningfully built or tested. "Upstream" is synonymous with "must be built first".
+
+**Downstream dependency** means: Feature B is downstream of Feature A if B cannot be built until A exists. "Downstream" is synonymous with "built later".
+
+#### Bottom-up build principle
+
+Applications are constructed in layers, from the inside out:
+
+1. **Lowest layers — Data and domain foundations**: shared reference data, shared entities, data models, and core domain logic. These are the raw materials that screens and workflows are built on top of.
+2. **Middle layers — Individual domain screens and workflows**: self-contained screens, subcomponents, and workflows that deliver distinct user value. Each operates independently within its bounded context.
+3. **Highest layers — Cross-cutting and orchestration concerns**: authentication, authorisation, navigation shells, landing pages, home screens, dashboards, and any feature whose primary purpose is to aggregate, link to, wire together, or gate access to other features. These are built **last**.
+
+A screen that *references*, *navigates to*, or *aggregates* other features is a **consumer** of those features. It has upstream dependencies on them — not the other way around. Do not invert this: the home screen depends on the subcomponents it links to, not vice versa. Likewise, authentication and navigation are cross-cutting concerns that wrap the domain features — they are implemented after the features they protect and connect, not before.
+
+#### Reasoning checklist
+
+Work through the following for each proposed feature:
+
+- Is this feature truly self-contained, or does it implicitly rely on data, configuration, or behaviour from another feature?
+- What must be built before this feature can be meaningfully implemented and tested? (These are its upstream dependencies.)
+- What other features cannot be built until this one exists? (These are its downstream dependencies.)
+- Does this feature depend on shared reference data, shared entities, or data models? If so, treat those data foundation features as upstream dependencies.
+- Is this feature a cross-cutting or orchestration concern (authentication, navigation shell, landing page, dashboard)? If so, it belongs in the highest layers — it depends on the domain features it wraps, protects, or links to.
+- What build layer does this feature belong to? A feature's layer is one greater than the highest layer among its upstream dependencies (or 0 if it has no upstream dependencies).
+
+#### Output
+
+Produce a feature plan as a neat table with the following columns:
+- Build Layer (integer, starting from 0)
 - Feature ID
 - Title
 - One-line description
 - MoSCoW priority
 - PRD sections
-- Upstream dependencies (features that must exist before this one; use feature IDs, or "None")
+- Upstream dependencies (features that must be built before this one; use feature IDs, or "None")
 - Downstream dependencies (features that depend on this one; use feature IDs, or "None")
 
+**Sort the table by Build Layer ascending**, then by Feature ID within each layer. The table should read top-to-bottom as a valid implementation order — no feature should appear before any of its upstream dependencies.
+
 Be explicit in both dependency columns — do not leave them blank without having reasoned that no dependency exists.
+
+Verify the ordering before presenting: walk each feature and confirm that all of its upstream dependencies appear in a lower layer. If they do not, re-assign layers until the ordering is consistent.
 
 Wait for the user to confirm or adjust the plan before proceeding.
 
