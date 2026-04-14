@@ -1,8 +1,13 @@
 ---
 name: prd-to-features
-description: Decomposes a PRD into individually deliverable feature specifications. Reads the PRD, identifies feature boundaries from bounded contexts and workflows, then generates a complete feature file per feature by spawning parallel feature-writer agents.
-user-invocable: true
-allowed-tools: Read, Glob, Bash(mkdir*), Agent
+description: >
+  Decomposes a PRD into individually deliverable feature specifications.
+  Reads the PRD, identifies feature boundaries from bounded contexts and
+  workflows, then generates a complete feature file per feature by spawning
+  parallel feature-writer agents.
+model: claude-sonnet-4-20250514
+tools: Read, Glob, Bash(mkdir*), Agent
+memory: project
 argument-hint: "[prd-path] (defaults to output/PRD.md)"
 ---
 
@@ -22,7 +27,7 @@ If the argument is empty or not provided, default to `output/PRD.md`.
 
 Use the Read tool to open the PRD file. If the file does not exist, stop and tell the user:
 
-> Missing PRD at [path]. Please run the **product-manager** agent first to produce the PRD before running this skill.
+> Missing PRD at [path]. Please run the **product-manager** agent first to produce the PRD before running this agent.
 
 ### Step 2: Check for existing features
 

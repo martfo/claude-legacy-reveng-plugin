@@ -1,6 +1,6 @@
 ---
 name: feature-writer
-description: Internal worker agent. Writes a single feature specification file using the LAP feature template. Only spawned by the prd-to-features skill — not for direct use.
+description: Internal worker agent. Writes a single feature specification file using the LAP feature template. Only spawned by the prd-to-features agent — not for direct use.
 user-invocable: false
 tools: Write
 model: claude-sonnet-4-20250514
@@ -25,7 +25,7 @@ Only begin writing the feature file once this reasoning is complete.
 
 ## Input
 
-Your prompt will contain the following, supplied by the prd-to-features skill:
+Your prompt will contain the following, supplied by the prd-to-features agent:
 
 - **Feature ID** — e.g. FT-003
 - **Feature title**
