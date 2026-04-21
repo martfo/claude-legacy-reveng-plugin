@@ -56,6 +56,7 @@ run_claude() {
     --plugin-dir "$PLUGIN_DIR"
     --dangerously-skip-permissions
     --output-format stream-json
+    --verbose
     --model "$model"
   )
 
@@ -401,10 +402,7 @@ EOF
   # Plugin and container config
   mounts+=("--mount" "type=bind,source=$CONFIG_DIR,target=/home/node/.config/reveng")
 
-  # Claude credentials
-  if [[ -d "$HOME/.claude" ]]; then
-    mounts+=("--mount" "type=bind,source=$HOME/.claude,target=/home/node/.claude")
-  fi
+  # Note: ~/.claude is mounted via devcontainer.json (not here) to avoid duplicate mounts.
 
   # SSH keys (optional)
   if [[ -d "$HOME/.ssh" ]]; then
@@ -423,7 +421,7 @@ EOF
   fi
 
   # Persistent shell history volume
-  mounts+=("--mount" "type=volume,source=ralph-history-$workspace_hash,target=/commandhistory")
+  mounts+=("--mount" "type=volume,source=reveng-history-$workspace_hash,target=/commandhistory")
 
   # ── Build env passthrough ────────────────────────────────────────────────
 
