@@ -245,7 +245,7 @@ EOF
 
   validate_inputs curate
   run_claude \
-    "Please could you run the \`digital-content-curator\` agent to prepare all the screenshots and transcripts for analysis? Thank you." \
+    "Run the \`digital-content-curator\` agent to prepare all the screenshots and transcripts for analysis." \
     "$MODEL" \
     "$VERBOSE" \
     "$DRY_RUN"
@@ -272,7 +272,7 @@ EOF
 
   validate_inputs synthesise
   run_claude \
-    "Please could you run the \`product-manager\` agent to analyse the application and produce the PRD? Thank you." \
+    "Run the \`product-manager\` agent on the curated transcripts, HTML mockups and source code in this directory." \
     "$MODEL" \
     "$VERBOSE" \
     "$DRY_RUN"
@@ -299,7 +299,7 @@ EOF
 
   validate_inputs decompose
   run_claude \
-    "Please could you run the \`prd-to-features\` agent to decompose the PRD into individual feature specifications? Thank you." \
+    "Run the \`prd-to-features\` agent to decompose the PRD into individual feature specifications." \
     "$MODEL" \
     "$VERBOSE" \
     "$DRY_RUN"
