@@ -272,7 +272,7 @@ EOF
 
   validate_inputs synthesise
   run_claude \
-    "Run the \`product-manager\` agent on the curated transcripts, HTML mockups and source code in this directory." \
+    "Run the \`product-manager\` agent to analyse the application and produce the PRD." \
     "$MODEL" \
     "$VERBOSE" \
     "$DRY_RUN"
